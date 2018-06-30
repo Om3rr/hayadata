@@ -8,8 +8,9 @@ export default {
       return axios.get('/api/articles')
     }
 
-    API.queryArticle = function (idx) {
-      return axios.get(`/api/query?article=${idx}`)
+    API.queryArticle = function (idx, state) {
+      const params = {article: idx, state};
+      return axios.get(`/api/query`, {params})
     }
 
     Vue.prototype.$api = API

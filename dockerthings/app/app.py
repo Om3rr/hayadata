@@ -9,12 +9,16 @@ def get_atricles():
 @app.route('/api/query')
 def query_article():
 	article_idx = request.args.get('article')
-	return jsonify(query(article_idx))
+	state = request.args.get('state') or "title"
+	print("state is %s"%state)
+	return jsonify(query(article_idx, state))
 
 @app.route('/<path:path>')
 def static_file(path):
-    print(path)
     return app.send_static_file(path)
+@app.route('/')
+def root():
+    return app.send_static_file('index.html')
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0')
