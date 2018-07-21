@@ -26,8 +26,8 @@ for k in raw_data:
       data[k][idx] = 'Empty'
 
 m = min(len(data['abstract vector']), len(data['title vector']))
-abstract_vectors = np.asarray(data['abstract vector'])
-title_vectors = np.asarray(data['title vector'])
+abstract_vectors = np.asarray(data['abstract vector'], dtype=np.float32)
+title_vectors = np.asarray(data['title vector'], dtype=np.float32)
 
 
 nb, d = abstract_vectors.shape
@@ -46,16 +46,16 @@ def articles():
 
 
 def query(idx, by='abstract'):
-	idx = int(idx)
-	to_query = index_titles if by == 'title' else index_abstract
-	vectors = title_vectors if by == 'title' else abstract_vectors
-	dist, scores = to_query.search(np.asarray([vectors[idx]]), ARTICLES_PER_PAGE)
-	articles = []
-	scores = scores[0]
-	dist = dist[0]
-	for d,s in zip(dist, scores):
-		title = data['title'][s]
-		abstract = data['abstract'][s]
-		idx = int(s)
-		articles.append({"title": data['title'][s], "abstract": data['abstract'][s], "index":int(s), "distance": int(d)})
-	return articles
+  idx = int(idx)
+  to_query = index_titles if by == 'title' else index_abstract
+  vectors = title_vectors if by == 'title' else abstract_vectors
+  dist, scores = to_query.search(np.asarray([vectors[idx]]), ARTICLES_PER_PAGE)
+  articles = []
+  scores = scores[0]
+  dist = dist[0]
+  for d,s in zip(dist, scores):
+    title = data['title'][s]
+    abstract = data['abstract'][s]
+    idx = int(s)
+    articles.append({"title": data['title'][s], "abstract": data['abstract'][s], "index":int(s), "distance": int(d)})
+  return articles
