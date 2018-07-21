@@ -2,15 +2,18 @@ import pickle
 import numpy as np
 import faiss
 import random
-
+from functools import reduce
 ARTICLES_PER_PAGE = 102
 
 f = open('db.pickle', 'rb')
 raw_data = pickle.load(f)
 data = {}
+keyz = ['abstract', 'title', 'title vector', 'abstract vector']
+keyss = {x: idx for idx, x in enumerate(set(reduce(lambda x,y: x+y, [list(raw_data[x].keys()) for x in keyz])))}
 for k in raw_data:
-  data[k] = [None]*len(raw_data[k])
-  for idx,kk in enumerate(raw_data[k]):
+  data[k] = [None]*len(keyss)
+  for kk in raw_data[k]:
+    idx = keyss[kk]
     data[k][idx] = raw_data[k][kk]
 
 m = min(len(data['abstract vector']), len(data['title vector']))
