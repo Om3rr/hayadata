@@ -4,10 +4,10 @@
       Sorting by
       <button @click="state = state === 'title' ? 'abstract' : 'title'">{{state}}</button>
     </div>
-    <div v-for="sliced_atricles in articles">
+    <div v-for="(sliced_atricles, idx) in articles" :key="idx">
       <b-card-group deck
                     class="mb-3">
-        <b-card class="clickable" v-for="article in sliced_atricles" :key="article.index" :title="article.title"
+        <b-card class="clickable" v-for="article in sliced_atricles" v-bind:key="article.index" :title="article.title"
                 @click="queryArticle(article.index)" :class="article.index === currentArticle ? 'marked' : ''">
           <blockquote class="blockquote mb-0">
             <p>{{article.abstract}}</p>
