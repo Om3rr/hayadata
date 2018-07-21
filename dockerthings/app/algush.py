@@ -1,6 +1,6 @@
+import faiss
 import pickle
 import numpy as np
-import faiss
 import random
 from functools import reduce
 ARTICLES_PER_PAGE = 102
@@ -11,10 +11,19 @@ data = {}
 keyz = ['abstract', 'title', 'title vector', 'abstract vector']
 keyss = {x: idx for idx, x in enumerate(set(reduce(lambda x,y: x+y, [list(raw_data[x].keys()) for x in keyz])))}
 for k in raw_data:
-  data[k] = [None]*len(keyss)
+  data[k] = [0]*len(keyss)
+  unspecified_list = [x if x not in raw_data[k] else None for x in keyss.keys()]
   for kk in raw_data[k]:
     idx = keyss[kk]
     data[k][idx] = raw_data[k][kk]
+  for kk in unspecified_list:
+    if kk is None:
+      continue
+    idx = keyss[kk]
+    if k.endswith('vector'):
+      data[k][idx] = np.zeros(300)
+    else:
+      data[k][idx] = 'Empty'
 
 m = min(len(data['abstract vector']), len(data['title vector']))
 abstract_vectors = np.asarray(data['abstract vector'])
