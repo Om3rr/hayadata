@@ -43,7 +43,6 @@ def query_multi():
     d1 = multiply_vectors(all_idxs, idx, primary)
     d2 = multiply_vectors(all_idxs, idx, secondary)
     final_idxs, final_distances = sort_by_distances(all_idxs, [d1,d2], [1,1])
-    pdb.set_trace()
   else:
     distances_two = multiply_vectors(idxs, idx, secondary)
     final_idxs, final_distances = sort_by_distances(idxs, [distances, distances_two], [prim_o['state'], sec_o['state']])
