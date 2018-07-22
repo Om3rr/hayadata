@@ -17,7 +17,6 @@ def query_article():
   print("state is %s" % state)
   return jsonify(query(article_idx, state))
 
-import pdb
 @app.route('/api/multiple')
 def query_multi():
   key = request.args.get('idx')
@@ -39,7 +38,6 @@ def query_multi():
     return jsonify(idxs_to_articles(idxs, distances))
   distances_two = multiply_vectors(idxs, idx, secondary)
   final_idxs, final_distances = sort_by_distances(idxs, [distances, distances_two], [prim_o['state'], sec_o['state']])
-  pdb.set_trace()
   return jsonify(idxs_to_articles(final_idxs, final_distances))
 
 
