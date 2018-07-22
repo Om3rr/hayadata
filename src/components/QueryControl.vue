@@ -1,9 +1,9 @@
 <template>
   <div>
-    <b-form-group :invalid-feedback="invalidFeedback" description="Let us know your name." @keyup.enter.native="enter"
-                  label="Enter your name" :state="state"
+    <b-form-group :invalid-feedback="invalidFeedback" description="Super informative description goes here" @keyup.enter.native="enter"
+                  label="Informative label goes here" :state="state"
                   label-for="input1">
-      <b-form-input id="input1" type="text" v-model="search" placeholder="Enter patent id" ></b-form-input>
+      <b-form-input id="input1" type="text" v-model="search" placeholder="Informative placeholder goes here" ></b-form-input>
     </b-form-group>
 
     <div class="container">
@@ -44,7 +44,7 @@
     props: ['query'],
     data() {
       return {
-        search: 'D529811',
+        search: '',
         purpose: 0,
         purpose_slider: 500,
         mechanism: 0,
@@ -61,7 +61,7 @@
     computed: {
       invalidFeedback() {
         if(this.purpose !== 1 && this.mechanism !== 1) {
-          return 'At least one of the parameters should be similar'
+          return 'Informative error message goes here'
         }
       },
       state() {
