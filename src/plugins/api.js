@@ -13,6 +13,10 @@ export default {
       return axios.get(`/api/query`, {params})
     }
 
+    API.queryMultiple = function (params) {
+      return axios.get(`/api/multiple`, {params})
+    }
+
     Vue.prototype.$api = API
   }
 }

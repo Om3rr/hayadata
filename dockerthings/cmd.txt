@@ -3,4 +3,4 @@ docker run -it --mount type=bind,source="$(pwd)"/app,target=/app -p 80:5000 -h 0
 
 
 
-docker run -it --mount type=bind,source=C:\Users\Omer\dev\hayadata\dockerthings\app,target=/app -p 80:5000 -h 0.0.0.0 hayadata
+docker run -it --mount type=bind,source="C:\Users\Omer\dev\hayadata\dockerthings\app",target=/app -p 80:5000 -h 0.0.0.0 hayadata
