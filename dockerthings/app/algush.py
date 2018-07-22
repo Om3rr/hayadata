@@ -109,6 +109,7 @@ def sort_by_distances(idxs, distances, states):
     d = d2
     reversed = True
   else:
+    #it means that s1 == s2 == 1
     d = np.maximum(d1, d2)
   argsort = d.argsort()
   if reversed:

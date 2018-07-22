@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, send_from_directory
 from algush import articles, query, get_idx_by_key, whos_primary, query_by, dont_sort, idxs_to_articles, multiply_vectors, sort_by_distances
+import numpy as np
 import json
 import pdb
 app = Flask(__name__, static_url_path='', static_folder='dist', )
@@ -36,8 +37,16 @@ def query_multi():
   idxs = idxs[0]
   if(dont_sort(mechanism, purpose)):
     return jsonify(idxs_to_articles(idxs, distances))
-  distances_two = multiply_vectors(idxs, idx, secondary)
-  final_idxs, final_distances = sort_by_distances(idxs, [distances, distances_two], [prim_o['state'], sec_o['state']])
+  if(prim_o['state'] == sec_o['state']):
+    _, idxs_two = query_by(idx, secondary, sec_o['slider'])
+    all_idxs = np.unique(np.concatenate([idxs_two[0], idxs]))
+    d1 = multiply_vectors(all_idxs, idx, primary)
+    d2 = multiply_vectors(all_idxs, idx, secondary)
+    final_idxs, final_distances = sort_by_distances(all_idxs, [d1,d2], [1,1])
+    pdb.set_trace()
+  else:
+    distances_two = multiply_vectors(idxs, idx, secondary)
+    final_idxs, final_distances = sort_by_distances(idxs, [distances, distances_two], [prim_o['state'], sec_o['state']])
   return jsonify(idxs_to_articles(final_idxs, final_distances))
 
 

@@ -45,9 +45,9 @@
     data() {
       return {
         search: 'D529811',
-        purpose: '',
+        purpose: 0,
         purpose_slider: 500,
-        mechanism: '',
+        mechanism: 0,
         mechanism_slider: 500,
         slider_range: [{label: 'Somewhat Similar'}, {label: 'Very Similar'}],
         radio_vals: [
