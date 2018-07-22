@@ -101,13 +101,19 @@ def sort_by_distances(idxs, distances, states):
   d1, d2 = distances
   s1, s2 = states
   idxs = list(idxs)
+  reversed = False
   if (s1 == 2):
     d = d1
+    reversed = True
   elif (s2 == 2):
     d = d2
+    reversed = True
   else:
     d = np.maximum(d1, d2)
   argsort = d.argsort()
+  if reversed:
+    argsort = np.flip(argsort, 0)[:-1]
+    argsort = np.insert(argsort, 0, 0)
   idxs = np.take(idxs, argsort)
   dist = np.take(d, argsort)
   return idxs, dist
