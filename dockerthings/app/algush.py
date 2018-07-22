@@ -3,15 +3,18 @@ import pickle
 import numpy as np
 import random
 from functools import reduce
+import pdb
+
 ARTICLES_PER_PAGE = 102
 
 f = open('db.pickle', 'rb')
 raw_data = pickle.load(f)
 data = {}
 keyz = ['abstract', 'title', 'title vector', 'abstract vector']
-keyss = {x: idx for idx, x in enumerate(set(reduce(lambda x,y: x+y, [list(raw_data[x].keys()) for x in keyz])))}
+keyss = {x: idx for idx, x in enumerate(set(reduce(lambda x, y: x + y, [list(raw_data[x].keys()) for x in keyz])))}
+idx_to_key = {v: k for k, v in keyss.items()}
 for k in raw_data:
-  data[k] = [0]*len(keyss)
+  data[k] = [0] * len(keyss)
   unspecified_list = [x if x not in raw_data[k] else None for x in keyss.keys()]
   for kk in raw_data[k]:
     idx = keyss[kk]
@@ -29,7 +32,6 @@ m = min(len(data['abstract vector']), len(data['title vector']))
 abstract_vectors = np.asarray(data['abstract vector'], dtype=np.float32)
 title_vectors = np.asarray(data['title vector'], dtype=np.float32)
 
-
 nb, d = abstract_vectors.shape
 nq = 10000
 index_abstract = faiss.IndexFlatL2(d)
@@ -40,9 +42,9 @@ index_titles.add(title_vectors)
 
 
 def articles():
-  samp = random.sample(range(0,len(data['abstract'])),ARTICLES_PER_PAGE)
-  return list(map(lambda x: {"title": data['title'][x], "abstract": data['abstract'][x], "index":x}, samp))
-
+  samp = random.sample(range(0, len(data['abstract'])), ARTICLES_PER_PAGE)
+  return list(
+    map(lambda x: {"title": data['title'][x], "abstract": data['abstract'][x], "index": x, "key": idx_to_key[x]}, samp))
 
 
 def query(idx, by='abstract'):
@@ -53,9 +55,71 @@ def query(idx, by='abstract'):
   articles = []
   scores = scores[0]
   dist = dist[0]
-  for d,s in zip(dist, scores):
+  for d, s in zip(dist, scores):
     title = data['title'][s]
     abstract = data['abstract'][s]
     idx = int(s)
-    articles.append({"title": data['title'][s], "abstract": data['abstract'][s], "index":int(s), "distance": int(d)})
+    articles.append({"title": data['title'][s], "abstract": data['abstract'][s], "index": int(s), "distance": int(d)})
   return articles
+
+
+def query_by(idx, by='abstract', N=1000):
+  to_query = index_titles if by == 'title' else index_abstract
+  vectors = title_vectors if by == 'title' else abstract_vectors
+  return to_query.search(np.asarray([vectors[idx]]), N)
+
+
+def idxs_to_articles(idxs, distances):
+  articles = []
+  for d, s in zip(distances, idxs):
+    title = data['title'][s]
+    abstract = data['abstract'][s]
+    idx = int(s)
+    articles.append({"title": data['title'][s], "abstract": data['abstract'][s], "index": int(s), "distance": int(d), "key": idx_to_key[s]})
+  return articles
+
+
+import pdb
+
+
+def get_idx_by_key(key):
+  if (key not in keyss):
+    return None
+  return keyss[key]
+
+
+def multiply_vectors(idxs, idx, by):
+  vectors = title_vectors if by == 'title' else abstract_vectors
+  vector = vectors[idx]
+  vs = np.take(vectors, idxs, axis=0) - vector
+  vs = vs**2
+  mul = np.sum(vs, axis=1)
+  return np.sqrt(mul)
+
+
+def sort_by_distances(idxs, distances, states):
+  d1, d2 = distances
+  s1, s2 = states
+  idxs = list(idxs)
+  if (s1 == 2):
+    d = d1
+  elif (s2 == 2):
+    d = d2
+  else:
+    d = np.maximum(d1, d2)
+  argsort = d.argsort()
+  idxs = np.take(idxs, argsort)
+  dist = np.take(d, argsort)
+  return idxs, dist
+
+
+def dont_sort(p, m):
+  return p['state'] * m['state'] == 0
+
+
+def whos_primary(p, m):
+  if p['state'] == 1:
+    return ['title', 'abstract'], [p, m]
+  if m['state'] == 1:
+    return ['abstract', 'title'], [m, p]
+  return None, None
