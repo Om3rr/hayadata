@@ -28,10 +28,9 @@
 
 <script>
   import QueryControl from './QueryControl';
-  import MyLoader from './MyLoader';
 
   export default {
-    components: {QueryControl, MyLoader},
+    components: {QueryControl},
     name: 'HelloWorld',
     data() {
       return {

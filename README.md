@@ -1,21 +1,15 @@
-# hayadata
-
-> A Vue.js project
-
 ## Build Setup
 
-``` bash
-# install dependencies
-npm install
+### npm run build --prod
+will create "dist" folder which you should put under "app/dist" (to let flask to serve it)
 
-# serve with hot reload at localhost:8080
-npm run dev
 
-# build for production with minification
-npm run build
+### to debug it locally you should have flask running on localhost:80 and run npm start
+### every call to "/api/endpoint" will go to localhost:80/api/endpoint <instead of localhost:8080...>
 
-# build for production and view the bundle analyzer report
-npm run build --report
-```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+Code structure
+
+API Definitions - src/plugins/api
+MainPage Definition - src/components/Main.vue
+Query(Header of the main page) Component - src/components/QueryController.vue

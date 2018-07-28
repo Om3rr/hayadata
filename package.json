@@ -9,7 +9,8 @@
     "start": "npm run dev",
     "lint": "eslint --ext .js,.vue src",
     "build": "node build/build.js",
-    "postbuild": "rm -rf dockerthings/app/dist && mv dist dockerthings/app && git add dockerthings/app/dist"
+    "omerbuild": "node build/build.js",
+    "postomerbuild": "rm -rf dockerthings/app/dist && mv dist dockerthings/app && git add dockerthings/app/dist"
   },
   "dependencies": {
     "axios": "^0.18.0",
