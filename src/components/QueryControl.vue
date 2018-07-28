@@ -1,9 +1,25 @@
 <template>
   <div>
-    <b-form-group :invalid-feedback="invalidFeedback" description="Super informative description goes here" @keyup.enter.native="enter"
-                  label="Informative label goes here" :state="state"
+    <b-form-group :invalid-feedback="invalidFeedback" description="Start writing and get a list of patents." @keyup.enter.native="enter"
+                  label="Select A Patent" :state="state"
                   label-for="input1">
-      <b-form-input id="input1" type="text" v-model="search" placeholder="Informative placeholder goes here" ></b-form-input>
+      <v-select :filterable="false" :options="options" @search="onSearch" v-model="search">
+        <template slot="no-options">
+          Start typing to find a patent
+        </template>
+        <template slot="option" slot-scope="option">
+          <div class="d-center">
+            <div class="code">{{option.code}}</div>
+            <div class="title">{{option.title}}</div>
+          </div>
+        </template>
+        <template slot="selected-option" scope="option">
+          <div class="selected d-center">
+            <div class="code">{{option.code}}</div>
+            <div class="title">{{option.title}}</div>
+          </div>
+        </template>
+      </v-select>
     </b-form-group>
 
     <div class="container">
@@ -31,20 +47,20 @@
       </div>
     </div>
     <div class="button-container">
-      <b-button class="button" variant="primary" @click="enter">GOGOGOGO</b-button>
+      <b-button class="button" variant="primary" @click="enter" :disabled="$parent.loading">Go</b-button>
     </div>
   </div>
 </template>
 
 <script>
   import VueSlideBar from 'vue-slide-bar'
-
+  import VueSelect from 'vue-select'
   export default {
     name: 'query-control',
     props: ['query'],
     data() {
       return {
-        search: '',
+        search: null,
         purpose: 0,
         purpose_slider: 500,
         mechanism: 0,
@@ -55,13 +71,23 @@
           {txt: 'Similiar', v: 1},
           {txt: 'Dissimiliar', v: 2},
         ],
-        tried: false
+        tried: false,
+        options: []
       }
     },
     computed: {
+      canQuery() {
+        if(this.$parent.loading) {
+          return false;
+        }
+        return !!this.search
+      },
       invalidFeedback() {
         if(this.purpose !== 1 && this.mechanism !== 1) {
-          return 'Informative error message goes here'
+          return 'At least one of the filter should be on Similar'
+        }
+        if(!this.search) {
+          return 'You should select a patent from the given list.'
         }
       },
       state() {
@@ -74,11 +100,22 @@
         if(!!this.invalidFeedback) {
           return;
         }
-        this.$parent.queryMultiple(this.search, this.mechanism, this.purpose, this.mechanism_slider, this.purpose_slider)
+        this.$parent.queryMultiple(this.search.code, this.mechanism, this.purpose, this.mechanism_slider, this.purpose_slider)
       },
-      setKey(key) {
-        this.search = key
+      onSearch(search, loading) {
+        loading(true);
+        this.fetchSearch(loading, search, this);
+      },
+      fetchSearch(loading, search, vm) {
+        this.$api.suggest(search).then((resp) => {
+          const {data: {response}} = resp;
+          this.options = response;
+        });
+        loading(false)
       }
+      // search: this._.debounce((loading, search, vm) => {
+      //   debugger
+      // }, 500)
     },
     components: {VueSlideBar}
   }
@@ -109,6 +146,20 @@
   }
   .button-container {
     margin: 20px;
+  }
+  /deep/.v-select.single .selected-tag {
+    width: 100%;
+  }
+  /deep/.selected-tag {
+    width: 100%;
+  }
+  /deep/.open .selected {
+    display: none;
+  }
+  .d-center {
+    .code {
+      font-weight: bold;
+    }
   }
 
 </style>

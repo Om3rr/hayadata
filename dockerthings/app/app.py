@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, send_from_directory
-from algush import articles, query, get_idx_by_key, whos_primary, query_by, dont_sort, idxs_to_articles, multiply_vectors, sort_by_distances
+from algush import articles, query, get_idx_by_key, whos_primary, query_by, dont_sort, idxs_to_articles, multiply_vectors, sort_by_distances, search_by_key
 import numpy as np
 import json
 import pdb
@@ -48,6 +48,10 @@ def query_multi():
     final_idxs, final_distances = sort_by_distances(idxs, [distances, distances_two], [prim_o['state'], sec_o['state']])
   return jsonify(idxs_to_articles(final_idxs, final_distances))
 
+@app.route('/api/suggest')
+def suggest():
+  key = request.args.get('text')
+  return jsonify(search_by_key(key))
 
 @app.route('/<path:path>')
 def static_file(path):
