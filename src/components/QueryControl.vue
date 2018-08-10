@@ -47,7 +47,8 @@
       </div>
     </div>
     <div class="button-container">
-      <b-button class="button" variant="primary" @click="enter" :disabled="$parent.loading">Go</b-button>
+      <b-button class="button" variant="primary" @click="enter(false)" :disabled="$parent.loading">Regular Search</b-button>
+      <b-button class="button" variant="primary" @click="enter(true)" :disabled="$parent.loading">Super Search</b-button>
     </div>
   </div>
 </template>
@@ -95,12 +96,12 @@
       }
     },
     methods: {
-      enter() {
+      enter(is_super) {
         this.tried = true;
         if(!!this.invalidFeedback) {
           return;
         }
-        this.$parent.queryMultiple(this.search.code, this.mechanism, this.purpose, this.mechanism_slider, this.purpose_slider)
+        this.$parent.queryMultiple(this.search.code, this.mechanism, this.purpose, this.mechanism_slider, this.purpose_slider, is_super)
       },
       onSearch(search, loading) {
         loading(true);

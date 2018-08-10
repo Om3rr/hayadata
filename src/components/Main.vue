@@ -20,6 +20,16 @@
             <p>{{article.abstract}}</p>
           </blockquote>
           <p v-if="article.distance">{{article.distance}}</p>
+          <div v-if="article.purp_tags">
+            <b-badge v-for="(tag, idxx) in article.purp_tags" style="margin: 0px 3px" :key="idxx">
+              {{tag}}
+            </b-badge>
+          </div>
+          <div v-if="article.mech_tags">
+            <b-badge v-for="(tag, idxx) in article.mech_tags" style="margin: 0px 3px; background: darkred;" :key="idxx">
+              {{tag}}
+            </b-badge>
+          </div>
         </b-card>
       </b-card-group>
     </div>
@@ -54,12 +64,14 @@
         this.articles = this.chunk(resp.data, 3);
         this.currentArticle = idx
       },
-      async queryMultiple(idx, m_state, p_state, m_slider = 1000, p_slider = 1000) {
+      async queryMultiple(idx, m_state, p_state, m_slider = 1000, p_slider = 1000, super_query= false) {
         this.loading = true;
+
         const resp = await this.$api.queryMultiple({
           idx,
           mechanism: {state: m_state, slider: m_slider},
-          purpose: {state: p_state, slider: p_slider}
+          purpose: {state: p_state, slider: p_slider},
+          super: super_query
         });
         this.articles = this.chunk(resp.data, 3);
         this.currentArticle = idx;
