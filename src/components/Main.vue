@@ -64,6 +64,14 @@
         this.articles = this.chunk(resp.data, 3);
         this.currentArticle = idx
       },
+
+      async querySingle(code) {
+        this.loading = true;
+        const resp = await this.$api.regular_search(code);
+        this.articles = this.chunk(resp.data, 3);
+        this.currentArticle = code;
+        setTimeout(() => this.loading = false, 500)
+      },
       async queryMultiple(idx, m_state, p_state, m_slider = 1000, p_slider = 1000, super_query= false) {
         this.loading = true;
 

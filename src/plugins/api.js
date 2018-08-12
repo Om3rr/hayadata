@@ -17,6 +17,10 @@ export default {
       return axios.get(`/api/multiple`, {params})
     };
 
+    API.regular_search = function(code) {
+      return axios.get(`/api/search`, {params: {code}})
+    }
+
 
     API.suggest = function(text) {
       return axios.get(`/api/suggest?text=${text}`)
